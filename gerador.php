@@ -1,6 +1,6 @@
 <?php
 
-include 'funcoes.php';
+include 'functions.php';
 // alimenta os argumentos
 argumentos($argv);
 
@@ -46,7 +46,7 @@ if ($result)
         //$string = dvd($data, true)."\n";
         //$string = print_r($data, true)."\n";
         $string .= "=====\n";
-        $string .= "tabela - {$data->tablename}\n";
+        $string .= "tabela - {$data->schemaname};{$data->tablename}\n";
         $string .= "=====\n\n";
 
         # `attnum` negativos sao colunas de sistema

@@ -4,7 +4,14 @@ include 'functions.php';
 // alimenta os argumentos
 argumentos($argv);
 
-$server = isset($args['server']) ? $args['server'] : die('Informe server');
+echo "Server: ";
+$server = fgets(STDIN);
+//echo "Your server was: {$server}.\n";
+
+if (trim($server) == '' || !isset($server))
+    die('Informe server');
+
+//$server = isset($args['server']) ? $args['server'] : die('Informe server');
 $dbname = isset($args['dbname']) ? $args['dbname'] : '';
 $user = isset($args['user']) ? $args['user'] : die('Informe user');
 

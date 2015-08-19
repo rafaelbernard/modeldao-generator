@@ -53,7 +53,7 @@ if ($result)
         //$string = dvd($data, true)."\n";
         //$string = print_r($data, true)."\n";
         $string .= "=====\n";
-        $string .= "tabela - {$data->schemaname};{$data->tablename}\n";
+        $string .= "tabela - {$data->schemaname}.{$data->tablename}\n";
         $string .= "=====\n\n";
 
         # `attnum` negativos sao colunas de sistema
@@ -71,12 +71,16 @@ if ($result)
             $string .= "Atributos:\n";
             $string .= "-----\n\n";
 
+            $atrs_em_linha = '';
+
             while ($data_attributes = pg_fetch_object($result_attributes))
             {
                 $string .= "- {$data_attributes->attname}\n";
                 //$string .= "> {$data_attributes->attnum}\n";
-                //$string .= print_r($data_attributes, true)."\n";
+                $atrs_em_linha .= "{$data_attributes->attname},";
             }
+
+            $string .= $atrs_em_linha."\n";
         }
 
         fwrite($handle, $string);

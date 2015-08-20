@@ -4,9 +4,12 @@ include 'functions.php';
 // alimenta os argumentos
 argumentos($argv);
 
-echo "Server: ";
-$server = fgets(STDIN);
-//echo "Your server was: {$server}.\n";
+$server = isset($args['server']) ? $args['server'] : '';
+
+if (!$server) {
+    echo "Server: ";
+    $server = fgets(STDIN);
+}
 
 if (trim($server) == '' || !isset($server))
     die('Informe server');
@@ -52,13 +55,14 @@ if ($result)
     {
         //$string = dvd($data, true)."\n";
         //$string = print_r($data, true)."\n";
-        $string .= "=====\n";
+        $string .= "\n=====\n";
         $string .= "tabela - {$data->schemaname}.{$data->tablename}\n";
         $string .= "=====\n\n";
 
         # `attnum` negativos sao colunas de sistema
         $query_attributes = sprintf("
-            SELECT  * FROM pg_catalog.pg_attribute
+            SELECT  *
+            FROM    pg_catalog.pg_attribute
             WHERE   attrelid = %d
             AND     attnum > 0
             "
@@ -71,16 +75,15 @@ if ($result)
             $string .= "Atributos:\n";
             $string .= "-----\n\n";
 
-            $atrs_em_linha = '';
+            $array_attributes_names = array();
 
             while ($data_attributes = pg_fetch_object($result_attributes))
             {
                 $string .= "- {$data_attributes->attname}\n";
-                //$string .= "> {$data_attributes->attnum}\n";
-                $atrs_em_linha .= "{$data_attributes->attname},";
+                $array_attributes_names[] = $data_attributes->attname;
             }
 
-            $string .= $atrs_em_linha."\n";
+            $string .= implode(',', $array_attributes_names)."\n";
         }
 
         fwrite($handle, $string);

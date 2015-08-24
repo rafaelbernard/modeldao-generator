@@ -4,6 +4,8 @@ include 'functions.php';
 // alimenta os argumentos
 argumentos($argv);
 
+define('PATH_OUTPUT_DIRECTORY', '/tmp/gerador');
+
 $server = isset($args['server']) ? $args['server'] : '';
 
 if (!$server) {
@@ -21,7 +23,7 @@ $user = isset($args['user']) ? $args['user'] : die('Informe user');
 echo "Password: ";
 $password = preg_replace('/\r?\n$/', '', `stty -echo; head -n1 ; stty echo`);
 echo "\n";
-echo "Your password was: {$password}.\n";
+//echo "Your password was: {$password}.\n";
 
 $connection_string = "host=$server port=5432 dbname=$dbname user=$user password=$password";
 echo "Connection string: $connection_string\n";
@@ -39,6 +41,7 @@ $query_tables = "
             ON  n.oid = c.relnamespace
     WHERE   c.relkind = 'r' -- r = relation
     AND     n.nspname not in ('pg_catalog','information_schema') -- nspname = schemaname
+    ORDER BY schemaname
     ";
 $result = pg_query($query_tables);
 
@@ -46,13 +49,18 @@ if ($result)
 {
     $string = '';
 
-    $directory = '/tmp/gerador';
+    $directory = PATH_OUTPUT_DIRECTORY;
+
     if (!is_dir($directory)) mkdir($directory);
+
     $path_tables_file = "$directory/tables.txt";
     $handle = fopen($path_tables_file, "w");
 
+    $schema_row = '';
+
     while ($data = pg_fetch_object($result))
     {
+        schema_directory_handle($data->schemaname);
         //$string = dvd($data, true)."\n";
         //$string = print_r($data, true)."\n";
         $string .= "\n=====\n";

@@ -21,3 +21,15 @@ function dvd($expression, $return) {
 
     die($var_dump);
 }
+
+function schema_directory_handle($schema) {
+    if ($schema) {
+        verify_directory(PATH_OUTPUT_DIRECTORY."/po/");
+        $path_schema = PATH_OUTPUT_DIRECTORY."/po/$schema";
+        verify_directory($path_schema);
+    }
+}
+
+function verify_directory($path) {
+    if (!is_dir($path)) mkdir($path);
+}

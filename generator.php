@@ -4,7 +4,13 @@ include 'functions.php';
 // alimenta os argumentos
 argumentos($argv);
 
-define('PATH_OUTPUT_DIRECTORY', '/tmp/gerador');
+$output_directory = '/tmp';
+
+if (isset($args['od'])) {
+    $output_directory = $args['od'];
+}
+
+define('PATH_OUTPUT_DIRECTORY', $output_directory . '/gerador');
 
 $server = isset($args['server']) ? $args['server'] : '';
 
@@ -26,7 +32,7 @@ echo "\n";
 //echo "Your password was: {$password}.\n";
 
 $connection_string = "host=$server port=5432 dbname=$dbname user=$user password=$password";
-echo "Connection string: $connection_string\n";
+//echo "Connection string: $connection_string\n";
 
 $connection = pg_connect($connection_string);
 var_dump($connection);
@@ -41,7 +47,7 @@ $query_tables = "
             ON  n.oid = c.relnamespace
     WHERE   c.relkind = 'r' -- r = relation
     AND     n.nspname not in ('pg_catalog','information_schema') -- nspname = schemaname
-    ORDER BY schemaname
+    ORDER BY schemaname, tablename
     ";
 $result = pg_query($query_tables);
 
@@ -98,6 +104,7 @@ if ($result)
     }
 
     fclose($handle);
+    echo "Output directory: " . PATH_OUTPUT_DIRECTORY . PHP_EOL;
 }
 
 

@@ -33,3 +33,7 @@ function schema_directory_handle($schema) {
 function verify_directory($path) {
     if (!is_dir($path)) mkdir($path);
 }
+
+function form_directoty_handle() {
+    verify_directory(PATH_OUTPUT_DIRECTORY."/form/");
+}

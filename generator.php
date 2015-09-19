@@ -66,6 +66,7 @@ if ($result)
 
     while ($data = pg_fetch_object($result))
     {
+        form_directoty_handle();
         schema_directory_handle($data->schemaname);
         //$string = dvd($data, true)."\n";
         //$string = print_r($data, true)."\n";

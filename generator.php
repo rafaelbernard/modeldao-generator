@@ -35,7 +35,7 @@ $connection_string = "host=$server port=5432 dbname=$dbname user=$user password=
 //echo "Connection string: $connection_string\n";
 
 $connection = pg_connect($connection_string);
-var_dump($connection);
+//var_dump($connection);
 
 $query_tables = "
     SELECT  c.oid AS tableoid
@@ -57,7 +57,11 @@ if ($result)
 
     $directory = PATH_OUTPUT_DIRECTORY;
 
+    // handle output directory
     if (!is_dir($directory)) mkdir($directory);
+
+    // handle form directory
+    form_directoty_handle();
 
     $path_tables_file = "$directory/tables.txt";
     $handle = fopen($path_tables_file, "w");
@@ -66,8 +70,15 @@ if ($result)
 
     while ($data = pg_fetch_object($result))
     {
-        form_directoty_handle();
         schema_directory_handle($data->schemaname);
+
+        $po_file = PATH_OUTPUT_DIRECTORY . "/po/{$data->schemaname}/{$data->tablename}.php";
+        $po_file_handle = fopen($po_file, "w");
+
+        $po_file_string = "<?php" . PHP_EOL . PHP_EOL;
+        $po_file_string .= "{$data->tablename}" . PHP_EOL;
+        $po_file_string .= PHP_EOL;
+
         //$string = dvd($data, true)."\n";
         //$string = print_r($data, true)."\n";
         $string .= "\n=====\n";
@@ -102,14 +113,10 @@ if ($result)
         }
 
         fwrite($handle, $string);
+        fwrite($po_file_handle, $po_file_string);
+        fclose($po_file_handle);
     }
 
     fclose($handle);
     echo "Output directory: " . PATH_OUTPUT_DIRECTORY . PHP_EOL;
 }
-
-
-// $dsn = "postgres:host=$server";
-//
-// $pdo = new PDO($dsn);
-// var_dump($pdo);

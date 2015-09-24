@@ -37,19 +37,7 @@ $connection_string = "host=$server port=5432 dbname=$dbname user=$user password=
 $connection = pg_connect($connection_string);
 //var_dump($connection);
 
-$query_tables = "
-    SELECT  c.oid AS tableoid
-    ,       c.relname AS tablename
-    ,       n.nspname AS schemaname
-    FROM    pg_catalog.pg_class c
-    LEFT JOIN
-            pg_namespace n
-            ON  n.oid = c.relnamespace
-    WHERE   c.relkind = 'r' -- r = relation
-    AND     n.nspname not in ('pg_catalog','information_schema') -- nspname = schemaname
-    ORDER BY schemaname, tablename
-    ";
-$result = pg_query($query_tables);
+$result = query_tables();
 
 if ($result)
 {
@@ -79,9 +67,7 @@ if ($result)
         $po_file_string .= "{$data->tablename}" . PHP_EOL;
         $po_file_string .= PHP_EOL;
 
-        //$string = dvd($data, true)."\n";
-        //$string = print_r($data, true)."\n";
-        $string .= "\n=====\n";
+        $string = "\n=====\n";
         $string .= "tabela - {$data->schemaname}.{$data->tablename}\n";
         $string .= "=====\n\n";
 
@@ -119,4 +105,21 @@ if ($result)
 
     fclose($handle);
     echo "Output directory: " . PATH_OUTPUT_DIRECTORY . PHP_EOL;
+}
+
+function query_tables() {
+    $query_tables = "
+        SELECT  c.oid AS tableoid
+        ,       c.relname AS tablename
+        ,       n.nspname AS schemaname
+        FROM    pg_catalog.pg_class c
+        LEFT JOIN
+                pg_namespace n
+                ON  n.oid = c.relnamespace
+        WHERE   c.relkind = 'r' -- r = relation
+        AND     n.nspname not in ('pg_catalog','information_schema') -- nspname = schemaname
+        ORDER BY schemaname, tablename
+        ";
+    $result = pg_query($query_tables);
+    return $result;
 }

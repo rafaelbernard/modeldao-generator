@@ -1,7 +1,8 @@
 <?php
 
 include 'functions.php';
-// alimenta os argumentos
+
+## alimenta os argumentos
 argumentos($argv);
 
 $output_directory = '/tmp';
@@ -45,10 +46,10 @@ if ($result)
 
     $directory = PATH_OUTPUT_DIRECTORY;
 
-    // handle output directory
+    # handle output directory
     if (!is_dir($directory)) mkdir($directory);
 
-    // handle form directory
+    # handle form directory
     form_directoty_handle();
 
     $path_tables_file = "$directory/tables.txt";
@@ -60,7 +61,10 @@ if ($result)
     {
         schema_directory_handle($data->schemaname);
 
-        $po_file = PATH_OUTPUT_DIRECTORY . "/po/{$data->schemaname}/{$data->tablename}.php";
+        $namespace_name = ucfirst($data->schemaname);
+        $class_name = to_class_name($data->tablename);
+
+        $po_file = PATH_OUTPUT_DIRECTORY . "/po/{$data->schemaname}/{$class_name}.php";
         $po_file_handle = fopen($po_file, "w");
 
         $po_file_string = "<?php" . PHP_EOL . PHP_EOL;

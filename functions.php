@@ -37,3 +37,10 @@ function verify_directory($path) {
 function form_directoty_handle() {
     verify_directory(PATH_OUTPUT_DIRECTORY."/form/");
 }
+
+function to_class_name($table_name) {
+    $class_name_no_tb = str_replace('tb', '', $table_name);
+    $class_name_no_underline = str_replace('_', '', $class_name_no_tb);
+    $class_name = ucfirst($class_name_no_underline);
+    return $class_name;
+}

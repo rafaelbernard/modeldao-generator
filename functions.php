@@ -31,6 +31,10 @@ function schema_directory_handle($schema) {
 }
 
 function verify_directory($path) {
+    if(is_dir($path)) {
+        $now = date('r');
+        rename($path, "{$path}.{$now}");
+    }
     if (!is_dir($path)) mkdir($path);
 }
 
@@ -40,7 +44,8 @@ function form_directoty_handle() {
 
 function to_class_name($table_name) {
     $class_name_no_tb = str_replace('tb', '', $table_name);
-    $class_name_no_underline = str_replace('_', '', $class_name_no_tb);
-    $class_name = ucfirst($class_name_no_underline);
+    $class_name_no_underline = str_replace('_', ' ', $class_name_no_tb);
+    $class_name_uc = ucwords($class_name_no_underline);
+    $class_name = str_replace(' ', '', $class_name_uc);
     return $class_name;
 }

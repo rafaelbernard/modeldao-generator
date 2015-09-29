@@ -23,7 +23,6 @@ if (!$server) {
 if (trim($server) == '' || !isset($server))
     die('Informe server');
 
-//$server = isset($args['server']) ? $args['server'] : die('Informe server');
 $dbname = isset($args['dbname']) ? $args['dbname'] : '';
 $user = isset($args['user']) ? $args['user'] : die('Informe user');
 
@@ -38,9 +37,9 @@ $connection_string = "host=$server port=5432 dbname=$dbname user=$user password=
 $connection = pg_connect($connection_string);
 //var_dump($connection);
 
-$result = query_tables();
+$result_tables = query_tables();
 
-if ($result)
+if ($result_tables)
 {
     $string = '';
 
@@ -57,7 +56,7 @@ if ($result)
 
     $schema_row = '';
 
-    while ($data = pg_fetch_object($result))
+    while ($data = pg_fetch_object($result_tables))
     {
         schema_directory_handle($data->schemaname);
 
@@ -84,16 +83,16 @@ if ($result)
             "
             , $data->tableoid
             );
-        $result_attributes = pg_query($query_attributes);
+        $result_tables_attributes = pg_query($query_attributes);
 
-        if ($result_attributes)
+        if ($result_tables_attributes)
         {
             $string .= "Atributos:\n";
             $string .= "-----\n\n";
 
             $array_attributes_names = array();
 
-            while ($data_attributes = pg_fetch_object($result_attributes))
+            while ($data_attributes = pg_fetch_object($result_tables_attributes))
             {
                 $string .= "- {$data_attributes->attname}\n";
                 $array_attributes_names[] = $data_attributes->attname;
@@ -124,6 +123,6 @@ function query_tables() {
         AND     n.nspname not in ('pg_catalog','information_schema') -- nspname = schemaname
         ORDER BY schemaname, tablename
         ";
-    $result = pg_query($query_tables);
-    return $result;
+    $result_tables = pg_query($query_tables);
+    return $result_tables;
 }

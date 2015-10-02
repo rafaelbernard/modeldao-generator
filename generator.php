@@ -2,7 +2,7 @@
 
 include 'functions.php';
 
-## alimenta os argumentos
+// Get the arguments
 argumentos($argv);
 
 $output_directory = '/tmp';
@@ -46,6 +46,10 @@ if ($result_tables)
     $directory = PATH_OUTPUT_DIRECTORY;
 
     # handle output directory
+    if(is_dir($directory)) {
+        $now = time();
+        rename($directory, "{$directory}.{$now}");
+    }
     if (!is_dir($directory)) mkdir($directory);
 
     # handle form directory

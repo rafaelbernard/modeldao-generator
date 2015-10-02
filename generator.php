@@ -46,11 +46,7 @@ if ($result_tables)
     $directory = PATH_OUTPUT_DIRECTORY;
 
     # handle output directory
-    if(is_dir($directory)) {
-        $now = time();
-        rename($directory, "{$directory}.{$now}");
-    }
-    if (!is_dir($directory)) mkdir($directory);
+    handle_output_directory($directory);
 
     # handle form directory
     form_directoty_handle();

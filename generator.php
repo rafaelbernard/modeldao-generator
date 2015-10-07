@@ -58,12 +58,13 @@ if ($result_tables)
 
     while ($data = pg_fetch_object($result_tables))
     {
-        schema_directory_handle($data->schemaname);
-
         $namespace_name = ucfirst($data->schemaname);
+
+        schema_directory_handle($namespace_name);
+
         $class_name = to_class_name($data->tablename);
 
-        $po_file = PATH_OUTPUT_DIRECTORY . "/po/{$data->schemaname}/{$class_name}.php";
+        $po_file = PATH_OUTPUT_DIRECTORY . "/Po/{$data->schemaname}/{$class_name}.php";
         $po_file_handle = fopen($po_file, "w");
 
         $po_file_string = "<?php" . PHP_EOL . PHP_EOL;

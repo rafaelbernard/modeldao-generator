@@ -56,8 +56,12 @@ if ($result_tables)
 
     $schema_row = '';
 
+    $tables = normalize_result_tables($result_tables);
+    fwrite($handle, print_r($tables, true));
+
     while ($data = pg_fetch_object($result_tables))
     {
+
         $namespace_name = ucfirst($data->schemaname);
 
         schema_directory_handle($namespace_name);
@@ -109,21 +113,4 @@ if ($result_tables)
 
     fclose($handle);
     echo "Output directory: " . PATH_OUTPUT_DIRECTORY . PHP_EOL;
-}
-
-function query_tables() {
-    $query_tables = "
-        SELECT  c.oid AS tableoid
-        ,       c.relname AS tablename
-        ,       n.nspname AS schemaname
-        FROM    pg_catalog.pg_class c
-        LEFT JOIN
-                pg_namespace n
-                ON  n.oid = c.relnamespace
-        WHERE   c.relkind = 'r' -- r = relation
-        AND     n.nspname not in ('pg_catalog','information_schema') -- nspname = schemaname
-        ORDER BY schemaname, tablename
-        ";
-    $result_tables = pg_query($query_tables);
-    return $result_tables;
 }

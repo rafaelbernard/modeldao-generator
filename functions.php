@@ -53,3 +53,31 @@ function handle_output_directory($path) {
     }
     if (!is_dir($path)) mkdir($path);
 }
+
+function query_tables() {
+    $query_tables = "
+        SELECT  c.oid AS tableoid
+        ,       c.relname AS tablename
+        ,       n.nspname AS schemaname
+        FROM    pg_catalog.pg_class c
+        LEFT JOIN
+                pg_namespace n
+                ON  n.oid = c.relnamespace
+        WHERE   c.relkind = 'r' -- r = relation
+        AND     n.nspname not in ('pg_catalog','information_schema') -- nspname = schemaname
+        ORDER BY schemaname, tablename
+        ";
+    $result_tables = pg_query($query_tables);
+    return $result_tables;
+}
+
+function normalize_result_tables($result_tables) {
+    $tables = array();
+    $idx = 0;
+    while ($data = pg_fetch_object($result_tables)) {
+        $table = $data;
+        $tables[$idx] = $table;
+        $idx++;
+    }
+    return $tables;
+}

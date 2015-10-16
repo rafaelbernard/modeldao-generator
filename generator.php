@@ -57,6 +57,8 @@ if ($result_tables)
     $schema_row = '';
 
     $tables = normalize_result_tables($result_tables);
+    get_attributes($tables);
+
     fwrite($handle, print_r($tables, true));
 
     while ($data = pg_fetch_object($result_tables))
@@ -75,7 +77,7 @@ if ($result_tables)
         $po_file_string .= "{$data->tablename}" . PHP_EOL;
         $po_file_string .= PHP_EOL;
 
-        $string = "\n=====\n";
+        $string = "\n=====" . PHP_EOL;
         $string .= "tabela - {$data->schemaname}.{$data->tablename}\n";
         $string .= "=====\n\n";
 

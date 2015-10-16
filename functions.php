@@ -72,6 +72,7 @@ function query_tables() {
 }
 
 function normalize_result_tables($result_tables) {
+    echo 'Normalizing tables' . PHP_EOL;
     $tables = array();
     $idx = 0;
     while ($data = pg_fetch_object($result_tables)) {
@@ -80,4 +81,40 @@ function normalize_result_tables($result_tables) {
         $idx++;
     }
     return $tables;
+}
+
+function get_attributes(&$tables) {
+    echo 'Retrieving attributes from tables' . PHP_EOL;
+    if ($tables) {
+        foreach($tables as $table) {
+            $table->attributes_list = get_attributes_from_table($table->tableoid);
+        }
+    }
+}
+
+function get_attributes_from_table($tableoid) {
+    # `attnum` negativos sao colunas de sistema
+    $query_attributes = sprintf("
+        SELECT  *
+        FROM    pg_catalog.pg_attribute
+        WHERE   attrelid = %d
+        AND     attnum > 0
+        "
+        , $tableoid
+        );
+    $result_tables_attributes = pg_query($query_attributes);
+
+    if ($result_tables_attributes)
+    {
+        $array_attributes = array();
+
+        while ($data_attributes = pg_fetch_object($result_tables_attributes))
+        {
+            $array_attributes[] = $data_attributes;
+        }
+
+        return $array_attributes;
+    }
+
+    return;
 }

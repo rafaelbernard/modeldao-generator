@@ -95,7 +95,7 @@ function get_attributes(&$tables) {
 function get_attributes_from_table($tableoid) {
     # `attnum` negativos sao colunas de sistema
     $query_attributes = sprintf("
-        SELECT  *
+        SELECT  attname, *
         FROM    pg_catalog.pg_attribute
         WHERE   attrelid = %d
         AND     attnum > 0
@@ -112,6 +112,8 @@ function get_attributes_from_table($tableoid) {
         while ($data_attributes = pg_fetch_object($result_tables_attributes))
         {
             $array_attributes[] = $data_attributes;
+            //print_r($data_attributes);
+            //exit;
         }
 
         return $array_attributes;
@@ -136,6 +138,14 @@ function write_tables_file($tables) {
         $text .= PHP_EOL . "=====" . PHP_EOL;
         $text .= "tabela - {$table->schemaname}.{$table->tablename}\n";
         $text .= "=====" . PHP_EOL;
+
+        foreach ($table->attributes_list as $attribute) {
+            $text .= "- {$attribute->attname}" . PHP_EOL;
+        }
+
+        foreach ($table->attributes_list as $attribute) {
+            $text .= "{$attribute->attname},";
+        }
     }
 
     fwrite($handle, $text);

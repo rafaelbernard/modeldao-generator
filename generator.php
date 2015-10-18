@@ -59,6 +59,9 @@ if ($result_tables)
     $tables = normalize_result_tables($result_tables);
     get_attributes($tables);
 
+    write_tables_file($tables);
+    exit;
+
     fwrite($handle, print_r($tables, true));
 
     while ($data = pg_fetch_object($result_tables))

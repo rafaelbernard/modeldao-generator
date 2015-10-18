@@ -99,6 +99,7 @@ function get_attributes_from_table($tableoid) {
         FROM    pg_catalog.pg_attribute
         WHERE   attrelid = %d
         AND     attnum > 0
+        ORDER BY attnum
         "
         , $tableoid
         );
@@ -117,4 +118,27 @@ function get_attributes_from_table($tableoid) {
     }
 
     return;
+}
+
+function write_tables_file($tables) {
+    echo "Writing tables file". PHP_EOL;
+
+    $directory = PATH_OUTPUT_DIRECTORY;
+    $file_path = "$directory/tables.txt";
+
+    echo "File path: {$file_path} ". PHP_EOL;
+
+    $handle = fopen($file_path, "w");
+
+    $text = '';
+
+    foreach($tables as $table) {
+        $text .= PHP_EOL . "=====" . PHP_EOL;
+        $text .= "tabela - {$table->schemaname}.{$table->tablename}\n";
+        $text .= "=====" . PHP_EOL;
+    }
+
+    fwrite($handle, $text);
+    fclose($handle);
+
 }

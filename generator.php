@@ -60,6 +60,9 @@ if ($result_tables)
     get_attributes($tables);
 
     write_tables_file($tables);
+
+    $database = normalize_as_namespaces_and_classes($tables);
+    tolog(print_r($database, true));
     exit;
 
     fwrite($handle, print_r($tables, true));

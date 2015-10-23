@@ -22,6 +22,16 @@ function dvd($expression, $return) {
     die($var_dump);
 }
 
+function tolog($text) {
+    $directory = PATH_OUTPUT_DIRECTORY;
+    $file_path = "$directory/log.txt";
+
+    $handle = fopen($file_path, "a+");
+
+    fwrite($handle, $text);
+    fclose($handle);
+}
+
 function schema_directory_handle($schema) {
     if ($schema) {
         verify_directory(PATH_OUTPUT_DIRECTORY."/po/");
@@ -146,9 +156,32 @@ function write_tables_file($tables) {
         foreach ($table->attributes_list as $attribute) {
             $text .= "{$attribute->attname},";
         }
+
+        $text .= PHP_EOL;
     }
 
     fwrite($handle, $text);
     fclose($handle);
 
+}
+
+function normalize_as_namespaces_and_classes($tables) {
+    $database = array();
+    $database['schemas'] = array();
+
+    $table_schema = '';
+    $actual_schema = '';
+
+    foreach($tables as $table) {
+        $table_schema = to_class_name($table->schemaname);
+
+        if ($actual_schema !== $table_schema) {
+            $actual_schema = $table_schema;
+            //$dabatase['schemas'][$actual_schema] = array();
+            $database['schemas'][$actual_schema]['tables'] = array();
+        }
+
+    }
+
+    return $database;
 }

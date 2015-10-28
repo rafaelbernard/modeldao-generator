@@ -166,6 +166,7 @@ function write_tables_file($tables) {
 }
 
 function normalize_as_namespaces_and_classes($tables) {
+    echo "normalize_as_namespaces_and_classes". PHP_EOL;
     $database = array();
     $database['schemas'] = array();
 
@@ -178,8 +179,11 @@ function normalize_as_namespaces_and_classes($tables) {
         if ($actual_schema !== $table_schema) {
             $actual_schema = $table_schema;
             //$dabatase['schemas'][$actual_schema] = array();
-            $database['schemas'][$actual_schema]['tables'] = array();
+            $database['schemas']["$actual_schema"]['name'] = $actual_schema;
+            $database['schemas']["$actual_schema"]['tables'] = array();
         }
+
+        $database['schemas']["$actual_schema"]['tables'][] = $table;
 
     }
 

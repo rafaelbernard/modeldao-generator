@@ -7,8 +7,9 @@ function argumentos($argv) {
     global $args;
     foreach($argv as $arg) {
         $ex = explode('=', $arg);
-        if (isset($ex[0]) AND isset($ex[1]))
+        if (isset($ex[0]) AND isset($ex[1])) {
             $args[$ex[0]] = $ex[1];
+        }
     }
 }
 
@@ -54,6 +55,12 @@ function to_class_name($table_name) {
     $class_name_uc = ucwords($class_name_no_underline);
     $class_name = str_replace(' ', '', $class_name_uc);
     return $class_name;
+}
+
+function to_attribute_name($table_name) {
+    $attribute_name_temp = lcfirst(to_class_name($table_name));
+    $attribute_name = $attribute_name_temp;
+    return $attribute_name;
 }
 
 function handle_output_directory($path) {
@@ -183,7 +190,21 @@ function normalize_as_namespaces_and_classes($tables) {
             $database['schemas']["$actual_schema"]['tables'] = array();
         }
 
-        $database['schemas']["$actual_schema"]['tables'][] = $table;
+        $class = new stdClass();
+        $class->name = to_class_name($table->tablename);
+        $class->attributes = array();
+
+        foreach ($table->attributes_list as $attribute_data) {
+            $attribute = new stdClass();
+            $attribute->name = to_attribute_name($attribute_data->attname);
+            $class->attributes[] = $attribute;
+
+            $attribute->attributeData = $attribute_data;
+        }
+
+        $class->tableData = $table;
+
+        $database['schemas']["$actual_schema"]['tables'][] = $class;
 
     }
 

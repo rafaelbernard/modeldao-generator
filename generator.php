@@ -51,6 +51,7 @@ if ($result_tables)
     # handle form directory
     form_directoty_handle();
 
+    # TABLES file
     $path_tables_file = "$directory/tables.txt";
     $handle = fopen($path_tables_file, "w");
 

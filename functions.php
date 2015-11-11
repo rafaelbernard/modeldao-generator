@@ -45,7 +45,7 @@ function verify_directory($path) {
     if (!is_dir($path)) mkdir($path);
 }
 
-function form_directoty_handle() {
+function form_directory_handle() {
     verify_directory(PATH_OUTPUT_DIRECTORY."/form/");
 }
 
@@ -209,4 +209,10 @@ function normalize_as_namespaces_and_classes($tables) {
     }
 
     return $database;
+}
+
+function create_po_directorie($database) {
+    foreach ($database['schemas'] as $schema) {
+        to_log($schema);
+    }
 }

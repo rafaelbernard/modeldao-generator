@@ -49,7 +49,7 @@ if ($result_tables)
     handle_output_directory($directory);
 
     # handle form directory
-    form_directoty_handle();
+    form_directory_handle();
 
     # TABLES file
     $path_tables_file = "$directory/tables.txt";
@@ -63,7 +63,9 @@ if ($result_tables)
     write_tables_file($tables);
 
     $database = normalize_as_namespaces_and_classes($tables);
-    tolog(print_r($database, true));
+
+    create_po_directories($database);
+    //tolog(print_r($database, true));
     exit;
 
     fwrite($handle, print_r($tables, true));

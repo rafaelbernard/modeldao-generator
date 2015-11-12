@@ -71,6 +71,10 @@ function handle_output_directory($path) {
     if (!is_dir($path)) mkdir($path);
 }
 
+function create_directory($path) {
+    if (!is_dir($path)) mkdir($path);
+}
+
 function query_tables() {
     $query_tables = "
         SELECT  c.oid AS tableoid
@@ -211,8 +215,9 @@ function normalize_as_namespaces_and_classes($tables) {
     return $database;
 }
 
-function create_po_directorie($database) {
+function create_po_directories($database) {
+    mkdir(PATH_OUTPUT_DIRECTORY . '/Po');
     foreach ($database['schemas'] as $schema) {
-        to_log($schema);
+        mkdir(PATH_OUTPUT_DIRECTORY . '/Po/' . $schema['name']);
     }
 }

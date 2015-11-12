@@ -216,8 +216,17 @@ function normalize_as_namespaces_and_classes($tables) {
 }
 
 function create_po_directories($database) {
+    echo "create_po_directories". PHP_EOL;
     mkdir(PATH_OUTPUT_DIRECTORY . '/Po');
     foreach ($database['schemas'] as $schema) {
         mkdir(PATH_OUTPUT_DIRECTORY . '/Po/' . $schema['name']);
+    }
+}
+
+function create_dao_directories($database) {
+    echo "create_dao_directories". PHP_EOL;
+    mkdir(PATH_OUTPUT_DIRECTORY . '/Dao');
+    foreach ($database['schemas'] as $schema) {
+        mkdir(PATH_OUTPUT_DIRECTORY . '/Dao/' . $schema['name']);
     }
 }

@@ -230,3 +230,20 @@ function create_dao_directories($database) {
         mkdir(PATH_OUTPUT_DIRECTORY . '/Dao/' . $schema['name']);
     }
 }
+
+function create_class_files($database) {
+    echo "create_class_files". PHP_EOL;
+    $po_path = PATH_OUTPUT_DIRECTORY . '/Po';
+    foreach ($database['schemas'] as $schema) {
+        $schema_name = '/' . $schema['name'] . '/';
+        $schema_po_path = $po_path . $schema_name;
+        echo $schema_po_path . PHP_EOL;
+        foreach ($schema['tables'] as $table) {
+            $class_file = "{$table->name}.php";
+            $class_path = "{$schema_po_path}{$class_file}";
+            echo $table->name . PHP_EOL;
+            echo $class_file.PHP_EOL;
+            echo $class_path.PHP_EOL;
+        }
+    }
+}

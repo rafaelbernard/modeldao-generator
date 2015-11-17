@@ -65,6 +65,8 @@ if ($result_tables)
     $database = normalize_as_namespaces_and_classes($tables);
 
     create_po_directories($database);
+    create_dao_directories($database);
+    create_class_files($database);
     //tolog(print_r($database, true));
     exit;
 

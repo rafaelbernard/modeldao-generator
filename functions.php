@@ -244,6 +244,10 @@ function create_class_files($database) {
             echo $table->name . PHP_EOL;
             echo $class_file.PHP_EOL;
             echo $class_path.PHP_EOL;
+
+            $handle = fopen($class_path, "w");
+            //fwrite($handle);
+            fclose($handle);
         }
     }
 }

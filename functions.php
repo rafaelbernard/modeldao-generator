@@ -248,7 +248,7 @@ function create_class_files($database) {
             $handle = fopen($class_path, "w");
 
             $text = "<?php" . PHP_EOL . PHP_EOL;
-            $text .= "namespace Sis\\Po\\{$schema['name']};" . PHP_EOL;
+            $text .= "namespace Sis\\Po\\{$schema['name']};" . PHP_EOL . PHP_EOL;
 
             fwrite($handle, $text);
 

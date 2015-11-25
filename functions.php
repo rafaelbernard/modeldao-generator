@@ -252,9 +252,14 @@ function create_class_files($database) {
 
             fwrite($handle, $text);
 
-            //write_class_attributes($handle, $table);
+            write_class_attributes($handle, $table);
 
             fclose($handle);
         }
     }
+}
+
+function write_class_attributes($handle, $table) {
+    $text = print_r($table, true);
+    fwrite($handle, $text);
 }

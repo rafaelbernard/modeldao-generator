@@ -237,22 +237,25 @@ function create_class_files($database) {
     foreach ($database['schemas'] as $schema) {
         $schema_name = '/' . $schema['name'] . '/';
         $schema_po_path = $po_path . $schema_name;
-        echo $schema_po_path . PHP_EOL;
+        //echo $schema_po_path . PHP_EOL;
         foreach ($schema['tables'] as $table) {
             $class_file = "{$table->name}.php";
             $class_path = "{$schema_po_path}{$class_file}";
             // echo $table->name . PHP_EOL;
             // echo $class_file.PHP_EOL;
-            // echo $class_path.PHP_EOL;
 
             $handle = fopen($class_path, "w");
 
             $text = "<?php" . PHP_EOL . PHP_EOL;
             $text .= "namespace Sis\\Po\\{$schema['name']};" . PHP_EOL . PHP_EOL;
+            $text .= "class {$table->name} {" . PHP_EOL;
 
             fwrite($handle, $text);
 
             write_class_attributes($handle, $table);
+
+            $end_class = "}" . PHP_EOL . PHP_EOL;
+            fwrite($handle, $end_class);
 
             fclose($handle);
         }

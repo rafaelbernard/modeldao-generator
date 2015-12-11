@@ -265,7 +265,7 @@ function create_class_files($database) {
 function write_class_attributes($handle, $table) {
     foreach ($table->attributes as $attribute) {
         $text = '';
-        $text = "public \${$attribute->name}" . PHP_EOL;
+        $text = "    public \${$attribute->name} = '';" . PHP_EOL;
         $text .= print_r($attribute, true);
         fwrite($handle, $text);
     }

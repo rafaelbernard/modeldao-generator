@@ -253,6 +253,7 @@ function create_class_files($database) {
             fwrite($handle, $text);
 
             write_class_attributes($handle, $table);
+            write_class_construct($handle, $table);
 
             $end_class = "}" . PHP_EOL . PHP_EOL;
             fwrite($handle, $end_class);
@@ -273,4 +274,12 @@ function write_class_attributes($handle, $table) {
     // fwrite($handle, $text);
     // $text = print_r($table->attributes, true);
     // fwrite($handle, $text);
+}
+
+function write_class_construct($handle, $table) {
+    $text = "" . PHP_EOL;
+    $text .= "    public function __construct(\$atrs = null) {" . PHP_EOL;
+    $text .= "        if (\$atrs) { return \$this->construir(\$atrs); }" . PHP_EOL;
+    $text .= "    }" . PHP_EOL;
+    fwrite($handle, $text);
 }

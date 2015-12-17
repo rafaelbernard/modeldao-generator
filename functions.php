@@ -96,9 +96,10 @@ function normalize_result_tables($result_tables) {
     echo 'Normalizing tables' . PHP_EOL;
     $tables = array();
     $idx = 0;
-    while ($data = pg_fetch_object($result_tables)) {
+    while ($data = pg_fetch_assoc($result_tables)) {
         $table = $data;
-        $tables[$idx] = $table;
+        //$tables[$idx] = $table;
+        $tables[] = $table;
         $idx++;
     }
     return $tables;
@@ -129,8 +130,8 @@ function get_attributes_from_table($tableoid) {
     if ($result_tables_attributes)
     {
         $array_attributes = array();
-
-        while ($data_attributes = pg_fetch_object($result_tables_attributes))
+        dvd(pg_fetch_assoc($result_tables_attributes));
+        while ($data_attributes = pg_fetch_assoc($result_tables_attributes))
         {
             $array_attributes[] = $data_attributes;
             //print_r($data_attributes);
@@ -267,7 +268,7 @@ function write_class_attributes($handle, $table) {
     foreach ($table->attributes as $attribute) {
         $text = '';
         $text = "    public \${$attribute->name} = '';" . PHP_EOL;
-        $text .= print_r($attribute, true);
+        //$text .= print_r($attribute, true);
         fwrite($handle, $text);
     }
     // $text = print_r($table, true);
@@ -280,6 +281,12 @@ function write_class_construct($handle, $table) {
     $text = "" . PHP_EOL;
     $text .= "    public function __construct(\$atrs = null) {" . PHP_EOL;
     $text .= "        if (\$atrs) { return \$this->construir(\$atrs); }" . PHP_EOL;
+    $text .= "    }" . PHP_EOL . PHP_EOL;
+    $text .= "    public function construir(\$atrs) {".PHP_EOL;
+    $text .= "        if (isset(\$atrs->seq_usuario)) {" . PHP_EOL;
+    $text .= "            return \$this->construirObjetoBanco(\$atrs);" . PHP_EOL;
+    $text .= "        }" . PHP_EOL;
+    $text .= "    return \$this->construirObjeto(\$atrs);" . PHP_EOL;
     $text .= "    }" . PHP_EOL;
     fwrite($handle, $text);
 }

@@ -59,9 +59,9 @@ if ($result_tables)
 
     $tables = normalize_result_tables($result_tables);
     $string = dvd($tables, true);
-    fwrite($handle, $string);
-    fclose($handle);
-    exit;
+    // fwrite($handle, $string);
+    // fclose($handle);
+    // exit;
 
     get_attributes($tables);
 

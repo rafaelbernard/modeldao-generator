@@ -3,6 +3,20 @@
 global $args;
 $args = array();
 
+function exception_error_handler($severity, $message, $filename, $lineno)
+{
+    if (error_reporting() == 0)
+    {
+        return;
+    }
+    if (error_reporting() & $severity)
+    {
+        //die('err');
+        tolog(print_r(debug_backtrace(), true), 'error.log');
+        echo 'Erros encontrados - error.log.' . PHP_EOL;
+    }
+}
+
 function argumentos($argv) {
     global $args;
     foreach($argv as $arg) {
@@ -13,7 +27,7 @@ function argumentos($argv) {
     }
 }
 
-function dvd($expression, $return) {
+function dvd($expression, $return = false) {
     $var_dump = var_dump($expression, true);
 
     if ($return) {
@@ -23,9 +37,9 @@ function dvd($expression, $return) {
     die($var_dump);
 }
 
-function tolog($text) {
+function tolog($text, $logfile = 'out.log') {
     $directory = PATH_OUTPUT_DIRECTORY;
-    $file_path = "$directory/log.txt";
+    $file_path = "$directory/$logfile";
 
     $handle = fopen($file_path, "a+");
 
@@ -85,7 +99,7 @@ function query_tables() {
                 pg_namespace n
                 ON  n.oid = c.relnamespace
         WHERE   c.relkind = 'r' -- r = relation
-        AND     n.nspname not in ('pg_catalog','information_schema') -- nspname = schemaname
+        AND     n.nspname not in ('pg_catalog','information_schema')
         ORDER BY schemaname, tablename
         ";
     $result_tables = pg_query($query_tables);
@@ -109,7 +123,7 @@ function get_attributes(&$tables) {
     echo 'Retrieving attributes from tables' . PHP_EOL;
     if ($tables) {
         foreach($tables as $table) {
-            $table->attributes_list = get_attributes_from_table($table->tableoid);
+            $table['attributes_list'] = get_attributes_from_table($table['tableoid']);
         }
     }
 }
@@ -130,7 +144,8 @@ function get_attributes_from_table($tableoid) {
     if ($result_tables_attributes)
     {
         $array_attributes = array();
-        dvd(pg_fetch_assoc($result_tables_attributes));
+        tolog(pg_fetch_assoc($result_tables_attributes));
+        //dvd(pg_fetch_assoc($result_tables_attributes));
         while ($data_attributes = pg_fetch_assoc($result_tables_attributes))
         {
             $array_attributes[] = $data_attributes;

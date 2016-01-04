@@ -1,6 +1,7 @@
 <?php
 
 include 'functions.php';
+include 'bootstrap.php';
 
 // Get the arguments
 argumentos($argv);
@@ -58,7 +59,6 @@ if ($result_tables)
     $schema_row = '';
 
     $tables = normalize_result_tables($result_tables);
-    $string = dvd($tables, true);
     // fwrite($handle, $string);
     // fclose($handle);
     // exit;

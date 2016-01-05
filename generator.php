@@ -59,9 +59,6 @@ if ($result_tables)
     $schema_row = '';
 
     $tables = normalize_result_tables($result_tables);
-    // fwrite($handle, $string);
-    // fclose($handle);
-    // exit;
 
     get_attributes($tables);
 

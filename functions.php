@@ -14,6 +14,7 @@ function exception_error_handler($severity, $message, $filename, $lineno)
         //die('err');
         tolog(print_r(debug_backtrace(), true), 'error.log');
         echo 'Erros encontrados - error.log.' . PHP_EOL;
+        exit;
     }
 }
 
@@ -28,7 +29,10 @@ function argumentos($argv) {
 }
 
 function dvd($expression, $return = false) {
-    $var_dump = var_dump($expression, true);
+    ob_start();
+    $var_dump = '';
+    var_dump($expression, true);
+    $var_dump .= ob_get_clean();
 
     if ($return) {
         return $var_dump;
@@ -107,23 +111,23 @@ function query_tables() {
 }
 
 function normalize_result_tables($result_tables) {
+    echo PHP_EOL . '[' . __FUNCTION__ . ']' . PHP_EOL;
     echo 'Normalizing tables' . PHP_EOL;
     $tables = array();
     $idx = 0;
     while ($data = pg_fetch_assoc($result_tables)) {
-        $table = $data;
-        //$tables[$idx] = $table;
-        $tables[] = $table;
-        $idx++;
+        array_push($tables, $data);
     }
     return $tables;
 }
 
 function get_attributes(&$tables) {
+    echo PHP_EOL . '[' . __FUNCTION__ . ']' . PHP_EOL;
     echo 'Retrieving attributes from tables' . PHP_EOL;
     if ($tables) {
-        foreach($tables as $table) {
+        foreach($tables as &$table) {
             $table['attributes_list'] = get_attributes_from_table($table['tableoid']);
+            //dvd($table['attributes_list']);
         }
     }
 }
@@ -144,8 +148,7 @@ function get_attributes_from_table($tableoid) {
     if ($result_tables_attributes)
     {
         $array_attributes = array();
-        tolog(pg_fetch_assoc($result_tables_attributes));
-        //dvd(pg_fetch_assoc($result_tables_attributes));
+
         while ($data_attributes = pg_fetch_assoc($result_tables_attributes))
         {
             $array_attributes[] = $data_attributes;
@@ -160,6 +163,7 @@ function get_attributes_from_table($tableoid) {
 }
 
 function write_tables_file($tables) {
+    echo PHP_EOL . '[' . __FUNCTION__ . ']' . PHP_EOL;
     echo "Writing tables file". PHP_EOL;
 
     $directory = PATH_OUTPUT_DIRECTORY;
@@ -173,15 +177,15 @@ function write_tables_file($tables) {
 
     foreach($tables as $table) {
         $text .= PHP_EOL . "=====" . PHP_EOL;
-        $text .= "tabela - {$table->schemaname}.{$table->tablename}\n";
+        $text .= "tabela - {$table['schemaname']}.{$table['tablename']}\n";
         $text .= "=====" . PHP_EOL;
 
-        foreach ($table->attributes_list as $attribute) {
-            $text .= "- {$attribute->attname}" . PHP_EOL;
+        foreach ($table['attributes_list'] as $attribute) {
+            $text .= "- {$attribute['attname']}" . PHP_EOL;
         }
 
-        foreach ($table->attributes_list as $attribute) {
-            $text .= "{$attribute->attname},";
+        foreach ($table['attributes_list'] as $attribute) {
+            $text .= "{$attribute['attname']},";
         }
 
         $text .= PHP_EOL;
@@ -193,7 +197,7 @@ function write_tables_file($tables) {
 }
 
 function normalize_as_namespaces_and_classes($tables) {
-    echo "normalize_as_namespaces_and_classes". PHP_EOL;
+    echo PHP_EOL . "normalize_as_namespaces_and_classes". PHP_EOL;
     $database = array();
     $database['schemas'] = array();
 
@@ -201,7 +205,7 @@ function normalize_as_namespaces_and_classes($tables) {
     $actual_schema = '';
 
     foreach($tables as $table) {
-        $table_schema = to_class_name($table->schemaname);
+        $table_schema = to_class_name($table['schemaname']);
 
         if ($actual_schema !== $table_schema) {
             $actual_schema = $table_schema;

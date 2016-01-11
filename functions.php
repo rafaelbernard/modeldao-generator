@@ -214,19 +214,19 @@ function normalize_as_namespaces_and_classes($tables) {
             $database['schemas']["$actual_schema"]['tables'] = array();
         }
 
-        $class = new stdClass();
-        $class->name = to_class_name($table->tablename);
-        $class->attributes = array();
+        $class = array();
+        $class['name'] = to_class_name($table['tablename']);
+        $class['attributes'] = array();
 
-        foreach ($table->attributes_list as $attribute_data) {
-            $attribute = new stdClass();
-            $attribute->name = to_attribute_name($attribute_data->attname);
-            $class->attributes[] = $attribute;
+        foreach ($table['attributes_list'] as $attribute_data) {
+            $attribute = array();
+            $attribute['name'] = to_attribute_name($attribute_data['attname']);
+            $class['attributes'][] = $attribute;
 
-            $attribute->attributeData = $attribute_data;
+            $attribute['attribute_data'] = $attribute_data;
         }
 
-        $class->tableData = $table;
+        $class['table_data'] = $table;
 
         $database['schemas']["$actual_schema"]['tables'][] = $class;
 
@@ -259,7 +259,7 @@ function create_class_files($database) {
         $schema_po_path = $po_path . $schema_name;
         //echo $schema_po_path . PHP_EOL;
         foreach ($schema['tables'] as $table) {
-            $class_file = "{$table->name}.php";
+            $class_file = "{$table['name']}.php";
             $class_path = "{$schema_po_path}{$class_file}";
             // echo $table->name . PHP_EOL;
             // echo $class_file.PHP_EOL;
@@ -268,7 +268,7 @@ function create_class_files($database) {
 
             $text = "<?php" . PHP_EOL . PHP_EOL;
             $text .= "namespace Sis\\Po\\{$schema['name']};" . PHP_EOL . PHP_EOL;
-            $text .= "class {$table->name} {" . PHP_EOL;
+            $text .= "class {$table['name']} {" . PHP_EOL;
 
             fwrite($handle, $text);
 

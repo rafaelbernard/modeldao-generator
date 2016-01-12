@@ -47,6 +47,7 @@ function tolog($text, $logfile = 'out.log') {
 
     $handle = fopen($file_path, "a+");
 
+    if (!is_array($text) OR !is_object($text)) $text = dvd($text, true);
     fwrite($handle, $text);
     fclose($handle);
 }
@@ -135,8 +136,20 @@ function get_attributes(&$tables) {
 function get_attributes_from_table($tableoid) {
     # `attnum` negativos sao colunas de sistema
     $query_attributes = sprintf("
-        SELECT  attname, *
-        FROM    pg_catalog.pg_attribute
+        SELECT  attname,
+                a.*,
+                CASE
+                    WHEN c.oid IS NOT NULL THEN
+                        1
+                    ELSE
+                        0
+                END AS isprimarykey
+        FROM    pg_catalog.pg_attribute a
+        LEFT JOIN
+                pg_catalog.pg_constraint c
+                ON  c.conrelid      = a.attrelid
+                AND a.attnum        = ANY(c.conkey)
+                AND c.contype       = 'p'
         WHERE   attrelid = %d
         AND     attnum > 0
         ORDER BY attnum
@@ -152,8 +165,7 @@ function get_attributes_from_table($tableoid) {
         while ($data_attributes = pg_fetch_assoc($result_tables_attributes))
         {
             $array_attributes[] = $data_attributes;
-            //print_r($data_attributes);
-            //exit;
+            //tolog($data_attributes);
         }
 
         return $array_attributes;
@@ -209,7 +221,6 @@ function normalize_as_namespaces_and_classes($tables) {
 
         if ($actual_schema !== $table_schema) {
             $actual_schema = $table_schema;
-            //$dabatase['schemas'][$actual_schema] = array();
             $database['schemas']["$actual_schema"]['name'] = $actual_schema;
             $database['schemas']["$actual_schema"]['tables'] = array();
         }
@@ -217,13 +228,19 @@ function normalize_as_namespaces_and_classes($tables) {
         $class = array();
         $class['name'] = to_class_name($table['tablename']);
         $class['attributes'] = array();
+        $class['primary_key_columns'] = array();
 
         foreach ($table['attributes_list'] as $attribute_data) {
             $attribute = array();
             $attribute['name'] = to_attribute_name($attribute_data['attname']);
+            $attribute['is_primary_key'] = $attribute_data['isprimarykey'];
             $class['attributes'][] = $attribute;
 
             $attribute['attribute_data'] = $attribute_data;
+
+            if (!$attribute['is_primary_key'] == '1') {
+                array_push($class['primary_key_columns'], $attribute_data['attname']);
+            }
         }
 
         $class['table_data'] = $table;
@@ -231,6 +248,7 @@ function normalize_as_namespaces_and_classes($tables) {
         $database['schemas']["$actual_schema"]['tables'][] = $class;
 
     }
+    tolog($database);
 
     return $database;
 }
@@ -261,7 +279,6 @@ function create_class_files($database) {
         foreach ($schema['tables'] as $table) {
             $class_file = "{$table['name']}.php";
             $class_path = "{$schema_po_path}{$class_file}";
-            // echo $table->name . PHP_EOL;
             // echo $class_file.PHP_EOL;
 
             $handle = fopen($class_path, "w");
@@ -297,12 +314,15 @@ function write_class_attributes($handle, $table) {
 }
 
 function write_class_construct($handle, $table) {
+
+    $first_primary_key_column = $table['primary_key_columns'] ? $table['primary_key_columns'][0] : 'xxx';
+
     $text = "" . PHP_EOL;
     $text .= "    public function __construct(\$atrs = null) {" . PHP_EOL;
     $text .= "        if (\$atrs) { return \$this->construir(\$atrs); }" . PHP_EOL;
     $text .= "    }" . PHP_EOL . PHP_EOL;
     $text .= "    public function construir(\$atrs) {".PHP_EOL;
-    $text .= "        if (isset(\$atrs->seq_usuario)) {" . PHP_EOL;
+    $text .= "        if (isset(\$atrs->{$first_primary_key_column})) {" . PHP_EOL;
     $text .= "            return \$this->construirObjetoBanco(\$atrs);" . PHP_EOL;
     $text .= "        }" . PHP_EOL;
     $text .= "    return \$this->construirObjeto(\$atrs);" . PHP_EOL;

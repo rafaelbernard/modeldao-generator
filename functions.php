@@ -233,6 +233,8 @@ function normalize_as_namespaces_and_classes($tables) {
         foreach ($table['attributes_list'] as $attribute_data) {
             $attribute = array();
             $attribute['name'] = to_attribute_name($attribute_data['attname']);
+            $attribute['name_ucfirst'] = ucfirst($attribute['name']);
+            $attribute['name_as_column'] = $attribute_data['attname'];
             $attribute['is_primary_key'] = $attribute_data['isprimarykey'];
             $class['attributes'][] = $attribute;
 
@@ -291,6 +293,7 @@ function create_class_files($database) {
 
             write_class_attributes($handle, $table);
             write_class_construct($handle, $table);
+            //write_class_getter_setters($handle, $table);
 
             $end_class = "}" . PHP_EOL . PHP_EOL;
             fwrite($handle, $end_class);
@@ -307,10 +310,6 @@ function write_class_attributes($handle, $table) {
         //$text .= print_r($attribute, true);
         fwrite($handle, $text);
     }
-    // $text = print_r($table, true);
-    // fwrite($handle, $text);
-    // $text = print_r($table->attributes, true);
-    // fwrite($handle, $text);
 }
 
 function write_class_construct($handle, $table) {
@@ -326,6 +325,18 @@ function write_class_construct($handle, $table) {
     $text .= "            return \$this->construirObjetoBanco(\$atrs);" . PHP_EOL;
     $text .= "        }" . PHP_EOL;
     $text .= "    return \$this->construirObjeto(\$atrs);" . PHP_EOL;
-    $text .= "    }" . PHP_EOL;
+    $text .= "    }" . PHP_EOL . PHP_EOL;
+    $text .= "    public function construirObjetoBanco(\$atrs) {" . PHP_EOL;
+
+    //foreach($table['table_data']['attributes_list'] as $attribute) {
+    foreach($table['attributes'] as $attribute) {
+        //$text .= "" . dvd($attribute, true);
+        $text .= "      if (isset(\$atrs->{$attribute['name_as_column']}))" . PHP_EOL;
+        $text .= "      {" . PHP_EOL;
+        $text .= "          \$this->set{$attribute['name_ucfirst']}(\$atrs->{$attribute['name_as_column']});" . PHP_EOL;
+        $text .= "      }" . PHP_EOL;
+    }
+
+    $text .= "    }" . PHP_EOL . PHP_EOL;
     fwrite($handle, $text);
 }

@@ -285,19 +285,21 @@ function create_class_files($database) {
         foreach ($schema['tables'] as $table) {
             $class_file = "{$table['name']}.php";
             $class_path = "{$schema_po_path}{$class_file}";
-            // echo $class_file.PHP_EOL;
+            $schema_name = $schema['name'];
+
+            $namespace = ($schema_name == 'Public') ? "namespace Sis\\Po;" : "namespace Sis\\Po\\{$schema['name']};";
 
             $handle = fopen($class_path, "w");
 
             $text = "<?php" . PHP_EOL . PHP_EOL;
-            $text .= "namespace Sis\\Po\\{$schema['name']};" . PHP_EOL . PHP_EOL;
+            $text .= "$namespace" . PHP_EOL . PHP_EOL;
             $text .= "class {$table['name']} {" . PHP_EOL;
 
             fwrite($handle, $text);
 
             write_class_attributes($handle, $table);
             write_class_construct($handle, $table);
-            //write_class_getter_setters($handle, $table);
+            write_class_getter_setters($handle, $table);
 
             $end_class = "}" . PHP_EOL . PHP_EOL;
             fwrite($handle, $end_class);
@@ -353,5 +355,32 @@ function write_class_construct($handle, $table) {
     }
 
     $text .= "    }" . PHP_EOL . PHP_EOL;
+    fwrite($handle, $text);
+}
+
+
+function write_class_getter_setters($handle, $table) {
+
+    $first_primary_key_column = $table['primary_key_columns'] ? $table['primary_key_columns'][0] : 'xxx';
+
+    $text = "" . PHP_EOL;
+
+    foreach($table['attributes'] as $attribute) {
+        $set = "set{$attribute['name_ucfirst']}(\${$attribute['name']})";
+        $get = "get{$attribute['name_ucfirst']}(\${$attribute['name']})";
+        $setting = "\$this->{$attribute['name']} = \${$attribute['name']}";
+        $getting = "return \$this->{$attribute['name']};"
+
+        $text .= "      public function {$set} {" . PHP_EOL;
+        $text .= "      {" . PHP_EOL;
+        $text .= "          \$this->set{$attribute['name_ucfirst']}(\$atrs->{$attribute['name_as_column']});" . PHP_EOL;
+        $text .= "      }" . PHP_EOL;
+
+        $text .= "      public function {$get} {" . PHP_EOL;
+        $text .= "      {" . PHP_EOL;
+        $text .= "          \$this->set{$attribute['name_ucfirst']}(\$atrs->{$attribute['name_as_column']});" . PHP_EOL;
+        $text .= "      }" . PHP_EOL;
+    }
+
     fwrite($handle, $text);
 }

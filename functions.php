@@ -18,6 +18,10 @@ function exception_error_handler($severity, $message, $filename, $lineno)
     }
 }
 
+function connect($connection_string) {
+    return pg_connect($connection_string);
+}
+
 function argumentos($argv) {
     global $args;
     foreach($argv as $arg) {
@@ -328,12 +332,23 @@ function write_class_construct($handle, $table) {
     $text .= "    }" . PHP_EOL . PHP_EOL;
     $text .= "    public function construirObjetoBanco(\$atrs) {" . PHP_EOL;
 
-    //foreach($table['table_data']['attributes_list'] as $attribute) {
     foreach($table['attributes'] as $attribute) {
         //$text .= "" . dvd($attribute, true);
         $text .= "      if (isset(\$atrs->{$attribute['name_as_column']}))" . PHP_EOL;
         $text .= "      {" . PHP_EOL;
         $text .= "          \$this->set{$attribute['name_ucfirst']}(\$atrs->{$attribute['name_as_column']});" . PHP_EOL;
+        $text .= "      }" . PHP_EOL;
+    }
+
+    $text .= "    }" . PHP_EOL . PHP_EOL;
+    $text .= "    public function construirObjeto(\$atrs) {" . PHP_EOL;
+
+    foreach($table['attributes'] as $attribute) {
+        $a_name = "\$atrs->{$attribute['name']}";
+
+        $text .= "      if (isset({$a_name}))" . PHP_EOL;
+        $text .= "      {" . PHP_EOL;
+        $text .= "          \$this->set{$attribute['name_ucfirst']}({$a_name});" . PHP_EOL;
         $text .= "      }" . PHP_EOL;
     }
 

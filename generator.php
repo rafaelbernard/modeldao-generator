@@ -35,7 +35,7 @@ echo "\n";
 $connection_string = "host=$server port=5432 dbname=$dbname user=$user password=$password";
 //echo "Connection string: $connection_string\n";
 
-$connection = pg_connect($connection_string);
+$connection = connect($connection_string);
 //var_dump($connection);
 
 $result_tables = query_tables();

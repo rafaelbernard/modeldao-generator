@@ -372,12 +372,10 @@ function write_class_getter_setters($handle, $table) {
         $getting = "return \$this->{$attribute['name']};";
 
         $text .= "      public function {$set} {" . PHP_EOL;
-        $text .= "      {" . PHP_EOL;
         $text .= "          {$setting}" . PHP_EOL;
         $text .= "      }" . PHP_EOL;
 
         $text .= "      public function {$get} {" . PHP_EOL;
-        $text .= "      {" . PHP_EOL;
         $text .= "          {$getting}" . PHP_EOL;
         $text .= "      }" . PHP_EOL;
     }

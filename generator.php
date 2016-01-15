@@ -1,6 +1,7 @@
 <?php
 
 include 'functions.php';
+include 'bootstrap.php';
 
 // Get the arguments
 argumentos($argv);
@@ -34,7 +35,7 @@ echo "\n";
 $connection_string = "host=$server port=5432 dbname=$dbname user=$user password=$password";
 //echo "Connection string: $connection_string\n";
 
-$connection = pg_connect($connection_string);
+$connection = connect($connection_string);
 //var_dump($connection);
 
 $result_tables = query_tables();
@@ -58,6 +59,7 @@ if ($result_tables)
     $schema_row = '';
 
     $tables = normalize_result_tables($result_tables);
+
     get_attributes($tables);
 
     write_tables_file($tables);

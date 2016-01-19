@@ -391,7 +391,8 @@ function create_dao_files($database) {
         $schema_dao_path = $dao_path . $schema_name;
         //echo $schema_po_path . PHP_EOL;
         foreach ($schema['tables'] as $table) {
-            $class_file = "{$table['name']}DAO.php";
+            $class_name = "{$table['name']}DAO";
+            $class_file = "{$class_name}.php";
             $class_path = "{$schema_dao_path}{$class_file}";
             $schema_name = $schema['name'];
 
@@ -401,7 +402,7 @@ function create_dao_files($database) {
 
             $text = "<?php" . PHP_EOL . PHP_EOL;
             $text .= "$namespace" . PHP_EOL . PHP_EOL;
-            $text .= "class {$table['name']} {" . PHP_EOL;
+            $text .= "class {$class_name} extends GenericDAO {" . PHP_EOL;
 
             fwrite($handle, $text);
 

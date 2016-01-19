@@ -382,3 +382,37 @@ function write_class_getter_setters($handle, $table) {
 
     fwrite($handle, $text);
 }
+
+function create_dao_files($database) {
+    echo "create_dao_files". PHP_EOL;
+    $dao_path = PATH_OUTPUT_DIRECTORY . '/Dao';
+    foreach ($database['schemas'] as $schema) {
+        $schema_name = '/' . $schema['name'] . '/';
+        $schema_dao_path = $dao_path . $schema_name;
+        //echo $schema_po_path . PHP_EOL;
+        foreach ($schema['tables'] as $table) {
+            $class_file = "{$table['name']}DAO.php";
+            $class_path = "{$schema_dao_path}{$class_file}";
+            $schema_name = $schema['name'];
+
+            $namespace = ($schema_name == 'Public') ? "namespace Sis\\Dao;" : "namespace Sis\\Dao\\{$schema['name']};";
+
+            $handle = fopen($class_path, "w");
+
+            $text = "<?php" . PHP_EOL . PHP_EOL;
+            $text .= "$namespace" . PHP_EOL . PHP_EOL;
+            $text .= "class {$table['name']} {" . PHP_EOL;
+
+            fwrite($handle, $text);
+
+            //write_class_attributes($handle, $table);
+            //write_class_construct($handle, $table);
+            //write_class_getter_setters($handle, $table);
+
+            $end_class = "}" . PHP_EOL . PHP_EOL;
+            fwrite($handle, $end_class);
+
+            fclose($handle);
+        }
+    }
+}

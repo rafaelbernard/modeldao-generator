@@ -367,7 +367,7 @@ function write_class_getter_setters($handle, $table) {
 
     foreach($table['attributes'] as $attribute) {
         $set = "set{$attribute['name_ucfirst']}(\${$attribute['name']})";
-        $get = "get{$attribute['name_ucfirst']}(\${$attribute['name']})";
+        $get = "get{$attribute['name_ucfirst']}()";
         $setting = "\$this->{$attribute['name']} = \${$attribute['name']};";
         $getting = "return \$this->{$attribute['name']};";
 

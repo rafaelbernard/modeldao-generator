@@ -424,10 +424,12 @@ function write_dao_update($handle, $table) {
 
     $text = "" . PHP_EOL;
 
-    //tolog($table);
+    tolog($table);
+    $className = $table['name'];
+    $object = "\$" . strtolower(substr($className, 0, 1)). substr($className, 1);
 
-    $text .= "public function updateJogo(\$jogo) {" . PHP_EOL;
-    $text .= "}" . PHP_EOL;
+    $text .= "    public function update{$className}($className {$object}) {" . PHP_EOL;
+    $text .= "    }" . PHP_EOL;
 
     // $first_primary_key_column = $table['primary_key_columns'] ? $table['primary_key_columns'][0] : 'xxx';
     //

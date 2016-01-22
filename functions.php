@@ -19,7 +19,10 @@ function exception_error_handler($severity, $message, $filename, $lineno)
 }
 
 function connect($connection_string) {
-    return pg_connect($connection_string);
+    $resource = @pg_connect($connection_string);
+    if (!$resource)
+        throw new Exception('Connection error.');
+    return $resource;
 }
 
 function argumentos($argv) {
@@ -254,7 +257,6 @@ function normalize_as_namespaces_and_classes($tables) {
         $database['schemas']["$actual_schema"]['tables'][] = $class;
 
     }
-    tolog($database);
 
     return $database;
 }
@@ -273,6 +275,7 @@ function create_dao_directories($database) {
     foreach ($database['schemas'] as $schema) {
         mkdir(PATH_OUTPUT_DIRECTORY . '/Dao/' . $schema['name']);
     }
+    rmdir(PATH_OUTPUT_DIRECTORY . '/Dao/Public');
 }
 
 function create_class_files($database) {
@@ -387,7 +390,7 @@ function create_dao_files($database) {
     echo "create_dao_files". PHP_EOL;
     $dao_path = PATH_OUTPUT_DIRECTORY . '/Dao';
     foreach ($database['schemas'] as $schema) {
-        $schema_name = '/' . $schema['name'] . '/';
+        $schema_name = $schema['name'] != 'Public' ? '/' . $schema['name'] . '/' : '/';
         $schema_dao_path = $dao_path . $schema_name;
         //echo $schema_po_path . PHP_EOL;
         foreach ($schema['tables'] as $table) {
@@ -406,9 +409,8 @@ function create_dao_files($database) {
 
             fwrite($handle, $text);
 
-            //write_class_attributes($handle, $table);
+            write_dao_update($handle, $table);
             //write_class_construct($handle, $table);
-            //write_class_getter_setters($handle, $table);
 
             $end_class = "}" . PHP_EOL . PHP_EOL;
             fwrite($handle, $end_class);
@@ -416,4 +418,35 @@ function create_dao_files($database) {
             fclose($handle);
         }
     }
+}
+
+function write_dao_update($handle, $table) {
+
+    $text = "" . PHP_EOL;
+
+    //tolog($table);
+
+    $text .= "public function updateJogo(\$jogo) {" . PHP_EOL;
+    $text .= "}" . PHP_EOL;
+
+    // $first_primary_key_column = $table['primary_key_columns'] ? $table['primary_key_columns'][0] : 'xxx';
+    //
+    //
+    //
+    // foreach($table['attributes'] as $attribute) {
+    //     $set = "set{$attribute['name_ucfirst']}(\${$attribute['name']})";
+    //     $get = "get{$attribute['name_ucfirst']}()";
+    //     $setting = "\$this->{$attribute['name']} = \${$attribute['name']};";
+    //     $getting = "return \$this->{$attribute['name']};";
+    //
+    //     $text .= "      public function {$set} {" . PHP_EOL;
+    //     $text .= "          {$setting}" . PHP_EOL;
+    //     $text .= "      }" . PHP_EOL;
+    //
+    //     $text .= "      public function {$get} {" . PHP_EOL;
+    //     $text .= "          {$getting}" . PHP_EOL;
+    //     $text .= "      }" . PHP_EOL;
+    // }
+
+    fwrite($handle, $text);
 }

@@ -70,7 +70,7 @@ if ($result_tables)
     create_dao_directories($database);
     create_class_files($database);
     create_dao_files($database);
-    //tolog(print_r($database, true));
+    
     exit;
 
     fwrite($handle, print_r($tables, true));

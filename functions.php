@@ -434,6 +434,25 @@ function write_dao_update($handle, $table) {
     $text .= "    public function update{$className}($className {$object}) {" . PHP_EOL;
     $text .= "        \$qry = sprintf(\"" . PHP_EOL;
     $text .= "            UPDATE $full_table_name" . PHP_EOL;
+    $text .= "            SET" . PHP_EOL;
+
+    $set = '';
+    $first = true;
+
+    foreach($table['attributes'] as $attribute) {
+        $column_name = $attribute['name_as_column'];
+
+        if ($first) {
+            $set .= "     {$column_name} = %s" . PHP_EOL;
+        } else {
+            $set .= "    , {$column_name} = %s" . PHP_EOL;
+        }
+
+        $first = !$first;
+    }
+
+    $text .= " {$set} " . PHP_EOL;
+
     $text .= "        \"" . PHP_EOL;
     $text .= "        );" . PHP_EOL;
     $text .= "    }" . PHP_EOL;

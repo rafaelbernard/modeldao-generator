@@ -443,12 +443,12 @@ function write_dao_update($handle, $table) {
         $column_name = $attribute['name_as_column'];
 
         if ($first) {
-            $set .= "     {$column_name} = %s" . PHP_EOL;
+            $set .= "          {$column_name} = %s" . PHP_EOL;
+            $first = !$first;
         } else {
-            $set .= "    , {$column_name} = %s" . PHP_EOL;
+            $set .= "        , {$column_name} = %s" . PHP_EOL;
         }
 
-        $first = !$first;
     }
 
     $text .= " {$set} " . PHP_EOL;

@@ -438,9 +438,11 @@ function write_dao_update($handle, $table) {
 
     $set = '';
     $first = true;
+    $values = '';
 
     foreach($table['attributes'] as $attribute) {
         $column_name = $attribute['name_as_column'];
+        $name_ucfirst = $attribute['name_ucfirst'];
 
         if ($first) {
             $set .= "          {$column_name} = %s" . PHP_EOL;
@@ -449,11 +451,15 @@ function write_dao_update($handle, $table) {
             $set .= "        , {$column_name} = %s" . PHP_EOL;
         }
 
+        $values .= "        , nulo({$object}->get{$name_ucfirst}) " . PHP_EOL;
+
     }
 
     $text .= " {$set} " . PHP_EOL;
+    $text .= "         \" " . PHP_EOL;
+    $text .= " {$values} " . PHP_EOL;
 
-    $text .= "        \"" . PHP_EOL;
+    $text .= "        " . PHP_EOL;
     $text .= "        );" . PHP_EOL;
     $text .= "    }" . PHP_EOL;
 

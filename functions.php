@@ -461,6 +461,8 @@ function write_dao_update($handle, $table) {
 
     $text .= "        " . PHP_EOL;
     $text .= "        );" . PHP_EOL;
+    $text .= "    \$result = \$this->exec(\$qry);" . PHP_EOL;
+    $text .= "    return \$result;" . PHP_EOL;
     $text .= "    }" . PHP_EOL;
 
     // $first_primary_key_column = $table['primary_key_columns'] ? $table['primary_key_columns'][0] : 'xxx';

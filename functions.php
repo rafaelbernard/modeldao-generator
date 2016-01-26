@@ -267,6 +267,7 @@ function create_po_directories($database) {
     foreach ($database['schemas'] as $schema) {
         mkdir(PATH_OUTPUT_DIRECTORY . '/Po/' . $schema['name']);
     }
+    rmdir(PATH_OUTPUT_DIRECTORY . '/Po/Public');
 }
 
 function create_dao_directories($database) {
@@ -282,9 +283,9 @@ function create_class_files($database) {
     echo "create_class_files". PHP_EOL;
     $po_path = PATH_OUTPUT_DIRECTORY . '/Po';
     foreach ($database['schemas'] as $schema) {
-        $schema_name = '/' . $schema['name'] . '/';
+        $schema_name = $schema['name'] != 'Public' ? '/' . $schema['name'] . '/' : '/';
         $schema_po_path = $po_path . $schema_name;
-        //echo $schema_po_path . PHP_EOL;
+        
         foreach ($schema['tables'] as $table) {
             $class_file = "{$table['name']}.php";
             $class_path = "{$schema_po_path}{$class_file}";
@@ -410,6 +411,7 @@ function create_dao_files($database) {
             fwrite($handle, $text);
 
             write_dao_update($handle, $table);
+            write_dao_insert($handle, $table);
             //write_class_construct($handle, $table);
 
             $end_class = "}" . PHP_EOL . PHP_EOL;
@@ -424,7 +426,6 @@ function write_dao_update($handle, $table) {
 
     $text = "" . PHP_EOL;
 
-    tolog($table);
     $className = $table['name'];
     $object = "\$" . strtolower(substr($className, 0, 1)). substr($className, 1);
     $schema_name = $table['table_data']['schemaname'];
@@ -465,24 +466,53 @@ function write_dao_update($handle, $table) {
     $text .= "    return \$result;" . PHP_EOL;
     $text .= "    }" . PHP_EOL;
 
-    // $first_primary_key_column = $table['primary_key_columns'] ? $table['primary_key_columns'][0] : 'xxx';
-    //
-    //
-    //
-    // foreach($table['attributes'] as $attribute) {
-    //     $set = "set{$attribute['name_ucfirst']}(\${$attribute['name']})";
-    //     $get = "get{$attribute['name_ucfirst']}()";
-    //     $setting = "\$this->{$attribute['name']} = \${$attribute['name']};";
-    //     $getting = "return \$this->{$attribute['name']};";
-    //
-    //     $text .= "      public function {$set} {" . PHP_EOL;
-    //     $text .= "          {$setting}" . PHP_EOL;
-    //     $text .= "      }" . PHP_EOL;
-    //
-    //     $text .= "      public function {$get} {" . PHP_EOL;
-    //     $text .= "          {$getting}" . PHP_EOL;
-    //     $text .= "      }" . PHP_EOL;
-    // }
+    fwrite($handle, $text);
+}
+
+function write_dao_insert($handle, $table) {
+
+    $text = "" . PHP_EOL;
+
+    tolog($table);
+    $className = $table['name'];
+    $object = "\$" . strtolower(substr($className, 0, 1)). substr($className, 1);
+    $schema_name = $table['table_data']['schemaname'];
+    $table_name = $table['table_data']['tablename'];
+    $full_table_name = $schema_name == 'public' ? $table_name : $schema_name . '.' . $table_name;
+
+    $text .= "    public function insert{$className}($className {$object}) {" . PHP_EOL;
+    $text .= "        \$qry = sprintf(\"" . PHP_EOL;
+    $text .= "            INSERT INTO $full_table_name" . PHP_EOL;
+    $text .= "            (" . PHP_EOL;
+
+    $set = '';
+    $first = true;
+    $values = '';
+
+    foreach($table['attributes'] as $attribute) {
+        $column_name = $attribute['name_as_column'];
+        $name_ucfirst = $attribute['name_ucfirst'];
+
+        if ($first) {
+            $set .= "          {$column_name} = %s" . PHP_EOL;
+            $first = !$first;
+        } else {
+            $set .= "        , {$column_name} = %s" . PHP_EOL;
+        }
+
+        $values .= "        , nulo({$object}->get{$name_ucfirst}) " . PHP_EOL;
+
+    }
+
+    $text .= " {$set} " . PHP_EOL;
+    $text .= "         \" " . PHP_EOL;
+    $text .= " {$values} " . PHP_EOL;
+
+    $text .= "        " . PHP_EOL;
+    $text .= "        );" . PHP_EOL;
+    $text .= "    \$result = \$this->exec(\$qry);" . PHP_EOL;
+    $text .= "    return \$result;" . PHP_EOL;
+    $text .= "    }" . PHP_EOL;
 
     fwrite($handle, $text);
 }

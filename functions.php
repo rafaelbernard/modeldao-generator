@@ -285,7 +285,7 @@ function create_class_files($database) {
     foreach ($database['schemas'] as $schema) {
         $schema_name = $schema['name'] != 'Public' ? '/' . $schema['name'] . '/' : '/';
         $schema_po_path = $po_path . $schema_name;
-        
+
         foreach ($schema['tables'] as $table) {
             $class_file = "{$table['name']}.php";
             $class_path = "{$schema_po_path}{$class_file}";
@@ -485,6 +485,7 @@ function write_dao_insert($handle, $table) {
     $text .= "            INSERT INTO $full_table_name" . PHP_EOL;
     $text .= "            (" . PHP_EOL;
 
+    $columns = '';
     $set = '';
     $first = true;
     $values = '';
@@ -494,16 +495,18 @@ function write_dao_insert($handle, $table) {
         $name_ucfirst = $attribute['name_ucfirst'];
 
         if ($first) {
-            $set .= "          {$column_name} = %s" . PHP_EOL;
+            $columns .= "          {$column_name}" . PHP_EOL;
             $first = !$first;
         } else {
-            $set .= "        , {$column_name} = %s" . PHP_EOL;
+            $columns .= "        , {$column_name}" . PHP_EOL;
         }
 
         $values .= "        , nulo({$object}->get{$name_ucfirst}) " . PHP_EOL;
 
     }
 
+    $text .= " {$columns} " . PHP_EOL;
+    $text .= " ) VALUES ( " . PHP_EOL;
     $text .= " {$set} " . PHP_EOL;
     $text .= "         \" " . PHP_EOL;
     $text .= " {$values} " . PHP_EOL;

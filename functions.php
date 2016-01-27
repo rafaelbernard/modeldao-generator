@@ -452,7 +452,7 @@ function write_dao_update($handle, $table) {
             $set .= "        , {$column_name} = %s" . PHP_EOL;
         }
 
-        $values .= "        , nulo({$object}->get{$name_ucfirst}) " . PHP_EOL;
+        $values .= "        , nulo({$object}->get{$name_ucfirst}()) " . PHP_EOL;
 
     }
 
@@ -486,7 +486,7 @@ function write_dao_insert($handle, $table) {
     $text .= "            (" . PHP_EOL;
 
     $columns = '';
-    $set = '';
+    $variables = '';
     $first = true;
     $values = '';
 
@@ -496,18 +496,21 @@ function write_dao_insert($handle, $table) {
 
         if ($first) {
             $columns .= "          {$column_name}" . PHP_EOL;
+            $variables .= "          %s" . PHP_EOL;
             $first = !$first;
         } else {
             $columns .= "        , {$column_name}" . PHP_EOL;
+            $variables .= "         , %s" . PHP_EOL;
         }
 
-        $values .= "        , nulo({$object}->get{$name_ucfirst}) " . PHP_EOL;
+        $values .= "        , nulo({$object}->get{$name_ucfirst}()) " . PHP_EOL;
 
     }
 
     $text .= " {$columns} " . PHP_EOL;
     $text .= " ) VALUES ( " . PHP_EOL;
-    $text .= " {$set} " . PHP_EOL;
+    $text .= " {$variables} " . PHP_EOL;
+    $text .= " ) " . PHP_EOL;
     $text .= "         \" " . PHP_EOL;
     $text .= " {$values} " . PHP_EOL;
 

@@ -252,6 +252,7 @@ function normalize_as_namespaces_and_classes($tables) {
             }
         }
 
+        $class['first_primary_key_column'] = $class['primary_key_columns'] ? $class['primary_key_columns'][0] : 'xxx';
         $class['table_data'] = $table;
 
         $database['schemas']["$actual_schema"]['tables'][] = $class;
@@ -412,6 +413,7 @@ function create_dao_files($database) {
 
             write_dao_update($handle, $table);
             write_dao_insert($handle, $table);
+            write_dao_delete($handle, $table);
             //write_class_construct($handle, $table);
 
             $end_class = "}" . PHP_EOL . PHP_EOL;
@@ -473,7 +475,6 @@ function write_dao_insert($handle, $table) {
 
     $text = "" . PHP_EOL;
 
-    tolog($table);
     $className = $table['name'];
     $object = "\$" . strtolower(substr($className, 0, 1)). substr($className, 1);
     $schema_name = $table['table_data']['schemaname'];
@@ -515,6 +516,32 @@ function write_dao_insert($handle, $table) {
     $text .= " {$values} " . PHP_EOL;
 
     $text .= "        " . PHP_EOL;
+    $text .= "        );" . PHP_EOL;
+    $text .= "    \$result = \$this->exec(\$qry);" . PHP_EOL;
+    $text .= "    return \$result;" . PHP_EOL;
+    $text .= "    }" . PHP_EOL;
+
+    fwrite($handle, $text);
+}
+
+function write_dao_delete($handle, $table) {
+
+    $text = "" . PHP_EOL;
+
+    tolog($table);
+    $className = $table['name'];
+    $object = "\$" . strtolower(substr($className, 0, 1)). substr($className, 1);
+    $schema_name = $table['table_data']['schemaname'];
+    $table_name = $table['table_data']['tablename'];
+    $full_table_name = $schema_name == 'public' ? $table_name : $schema_name . '.' . $table_name;
+    $first_primary_key_column = $table['first_primary_key_column'];
+
+    $text .= "    public function delete{$className}({$first_primary_key_column}) {" . PHP_EOL;
+    $text .= "        \$qry = sprintf(\"" . PHP_EOL;
+    $text .= "            DELETE FROM $full_table_name" . PHP_EOL;
+    $text .= "            WHERE {$first_primary_key_column} = %d" . PHP_EOL;
+    $text .= "            '" . PHP_EOL;
+    $text .= "            , nuloi({$object}->get{$first_primary_key_column}()) " . PHP_EOL;
     $text .= "        );" . PHP_EOL;
     $text .= "    \$result = \$this->exec(\$qry);" . PHP_EOL;
     $text .= "    return \$result;" . PHP_EOL;

@@ -253,6 +253,7 @@ function normalize_as_namespaces_and_classes($tables) {
         }
 
         $class['first_primary_key_column'] = $class['primary_key_columns'] ? $class['primary_key_columns'][0] : 'xxx';
+        $class['first_primary_key_attribute_name'] = to_attribute_name($class['first_primary_key_column']);
         $class['table_data'] = $table;
 
         $database['schemas']["$actual_schema"]['tables'][] = $class;
@@ -535,13 +536,14 @@ function write_dao_delete($handle, $table) {
     $table_name = $table['table_data']['tablename'];
     $full_table_name = $schema_name == 'public' ? $table_name : $schema_name . '.' . $table_name;
     $first_primary_key_column = $table['first_primary_key_column'];
+    $first_primary_key_variable = "\$" . $table['first_primary_key_attribute_name'];
 
-    $text .= "    public function delete{$className}({$first_primary_key_column}) {" . PHP_EOL;
+    $text .= "    public function delete{$className}({$first_primary_key_variable}) {" . PHP_EOL;
     $text .= "        \$qry = sprintf(\"" . PHP_EOL;
     $text .= "            DELETE FROM $full_table_name" . PHP_EOL;
     $text .= "            WHERE {$first_primary_key_column} = %d" . PHP_EOL;
-    $text .= "            '" . PHP_EOL;
-    $text .= "            , nuloi({$object}->get{$first_primary_key_column}()) " . PHP_EOL;
+    $text .= "            \"" . PHP_EOL;
+    $text .= "            , nuloi({$first_primary_key_variable}) " . PHP_EOL;
     $text .= "        );" . PHP_EOL;
     $text .= "    \$result = \$this->exec(\$qry);" . PHP_EOL;
     $text .= "    return \$result;" . PHP_EOL;

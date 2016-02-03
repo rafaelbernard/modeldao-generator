@@ -391,16 +391,18 @@ function write_class_getter_setters($handle, $table) {
 
 function create_dao_files($database) {
     echo "create_dao_files". PHP_EOL;
+    $po_path = PATH_OUTPUT_DIRECTORY . 'Po';
     $dao_path = PATH_OUTPUT_DIRECTORY . '/Dao';
     foreach ($database['schemas'] as $schema) {
         $schema_name = $schema['name'] != 'Public' ? '/' . $schema['name'] . '/' : '/';
         $schema_dao_path = $dao_path . $schema_name;
-        //echo $schema_po_path . PHP_EOL;
         foreach ($schema['tables'] as $table) {
+            $po_class_name = $table['name'];
             $class_name = "{$table['name']}DAO";
             $class_file = "{$class_name}.php";
             $class_path = "{$schema_dao_path}{$class_file}";
             $schema_name = $schema['name'];
+            $schema_for_namespace_path = ($schema_name == 'Public') ? '' : "\\{$schema_name}";
 
             $namespace = ($schema_name == 'Public') ? "namespace Sis\\Dao;" : "namespace Sis\\Dao\\{$schema['name']};";
 
@@ -408,6 +410,7 @@ function create_dao_files($database) {
 
             $text = "<?php" . PHP_EOL . PHP_EOL;
             $text .= "$namespace" . PHP_EOL . PHP_EOL;
+            $text .= "use Sis\\Po\\{$schema_for_namespace_path}{$po_class_name};" . PHP_EOL . PHP_EOL;
             $text .= "class {$class_name} extends GenericDAO {" . PHP_EOL;
 
             fwrite($handle, $text);

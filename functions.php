@@ -418,6 +418,7 @@ function create_dao_files($database) {
             write_dao_update($handle, $table);
             write_dao_insert($handle, $table);
             write_dao_delete($handle, $table);
+            write_dao_get_list($handle, $table);
             //write_class_construct($handle, $table);
 
             $end_class = "}" . PHP_EOL . PHP_EOL;
@@ -549,6 +550,33 @@ function write_dao_delete($handle, $table) {
     $text .= "            , nuloi({$first_primary_key_variable}) " . PHP_EOL;
     $text .= "        );" . PHP_EOL;
     $text .= "    \$result = \$this->exec(\$qry);" . PHP_EOL;
+    $text .= "    return \$result;" . PHP_EOL;
+    $text .= "    }" . PHP_EOL;
+
+    fwrite($handle, $text);
+}
+
+function write_dao_get_list($handle, $table) {
+
+    $text = "" . PHP_EOL;
+
+    tolog($table);
+    $className = $table['name'];
+    $object = "\$" . strtolower(substr($className, 0, 1)). substr($className, 1);
+    $schema_name = $table['table_data']['schemaname'];
+    $table_name = $table['table_data']['tablename'];
+    $full_table_name = $schema_name == 'public' ? $table_name : $schema_name . '.' . $table_name;
+    $first_primary_key_column = $table['first_primary_key_column'];
+    $first_primary_key_variable = "\$" . $table['first_primary_key_attribute_name'];
+
+    $text .= "    public function getList{$className}() {" . PHP_EOL;
+    $text .= "        \$qry = sprintf(\"" . PHP_EOL;
+    $text .= "            DELETE FROM $full_table_name" . PHP_EOL;
+    $text .= "            WHERE {$first_primary_key_column} = %d" . PHP_EOL;
+    $text .= "            \"" . PHP_EOL;
+    $text .= "            , nuloi({$first_primary_key_variable}) " . PHP_EOL;
+    $text .= "        );" . PHP_EOL;
+    $text .= "    \$result = \$this->select(\$qry);" . PHP_EOL;
     $text .= "    return \$result;" . PHP_EOL;
     $text .= "    }" . PHP_EOL;
 

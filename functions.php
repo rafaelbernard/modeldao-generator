@@ -569,10 +569,27 @@ function write_dao_get_list($handle, $table) {
     $first_primary_key_column = $table['first_primary_key_column'];
     $first_primary_key_variable = "\$" . $table['first_primary_key_attribute_name'];
 
-    $text .= "    public function getList{$className}() {" . PHP_EOL;
+    foreach($table['attributes'] as $attribute) {
+        $column_name = $attribute['name_as_column'];
+        $name_ucfirst = $attribute['name_ucfirst'];
+
+        if ($first) {
+            $columns .= "          {$column_name}" . PHP_EOL;
+            $variables .= "          %s" . PHP_EOL;
+            $first = !$first;
+        } else {
+            $columns .= "        , {$column_name}" . PHP_EOL;
+            $variables .= "         , %s" . PHP_EOL;
+        }
+
+        $values .= "        , nulo({$object}->get{$name_ucfirst}()) " . PHP_EOL;
+
+    }
+
+    $text .= "    public function getLista{$className}() {" . PHP_EOL;
     $text .= "        \$qry = sprintf(\"" . PHP_EOL;
-    $text .= "            DELETE FROM $full_table_name" . PHP_EOL;
-    $text .= "            WHERE {$first_primary_key_column} = %d" . PHP_EOL;
+    $text .= "            SELECT {$columns}" . PHP_EOL;
+    $text .= "            FROM $full_table_name" . PHP_EOL;
     $text .= "            \"" . PHP_EOL;
     $text .= "            , nuloi({$first_primary_key_variable}) " . PHP_EOL;
     $text .= "        );" . PHP_EOL;

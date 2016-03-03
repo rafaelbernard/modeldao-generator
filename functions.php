@@ -569,6 +569,8 @@ function write_dao_get_list($handle, $table) {
     $first_primary_key_column = $table['first_primary_key_column'];
     $first_primary_key_variable = "\$" . $table['first_primary_key_attribute_name'];
 
+    $first = true;
+
     foreach($table['attributes'] as $attribute) {
         $column_name = $attribute['name_as_column'];
         $name_ucfirst = $attribute['name_ucfirst'];

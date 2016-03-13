@@ -330,7 +330,7 @@ function write_class_construct($handle, $table) {
 
     $text = "" . PHP_EOL;
     $text .= "    public function __construct(\$atrs = null) {" . PHP_EOL;
-    $text .= "        if (\$atrs) { return \$this->construir(\$atrs); }" . PHP_EOL;
+    $text .= "        if (\$atrs) { \$this->construir(\$atrs); }" . PHP_EOL;
     $text .= "    }" . PHP_EOL . PHP_EOL;
     $text .= "    public function construir(\$atrs) {".PHP_EOL;
     $text .= "        if (isset(\$atrs->{$first_primary_key_column})) {" . PHP_EOL;
@@ -569,6 +569,7 @@ function write_dao_get_list($handle, $table) {
     $first_primary_key_column = $table['first_primary_key_column'];
     $first_primary_key_variable = "\$" . $table['first_primary_key_attribute_name'];
 
+    $columns = '';
     $first = true;
 
     foreach($table['attributes'] as $attribute) {

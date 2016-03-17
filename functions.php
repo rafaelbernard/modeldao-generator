@@ -597,7 +597,6 @@ function write_dao_get_list($handle, $table) {
     $text .= "            SELECT {$columns}" . PHP_EOL;
     $text .= "            FROM $full_table_name" . PHP_EOL;
     $text .= "            \"" . PHP_EOL;
-    $text .= "            , nuloi({$first_primary_key_variable}) " . PHP_EOL;
     $text .= "        );" . PHP_EOL;
     $text .= "    \$result = \$this->select(\$qry);" . PHP_EOL;
     $text .= "    return \$result;" . PHP_EOL;

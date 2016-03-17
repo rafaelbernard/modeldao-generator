@@ -293,7 +293,7 @@ function create_class_files($database) {
             $class_path = "{$schema_po_path}{$class_file}";
             $schema_name = $schema['name'];
 
-            $namespace = ($schema_name == 'Public') ? "namespace Sis\\Po;" : "namespace Sis\\Po\\{$schema['name']};";
+            $namespace = ($schema_name == 'Public') ? "namespace Sis\\Po;" : "namespace Sis\\Po\\{$schema_name};";
 
             $handle = fopen($class_path, "w");
 
@@ -405,7 +405,7 @@ function create_dao_files($database) {
             $schema_name = $schema['name'];
             $schema_for_namespace_path = ($schema_name == 'Public') ? '' : "\\{$schema_name}";
 
-            $namespace = ($schema_name == 'Public') ? "namespace Sis\\Dao;" : "namespace Sis\\Dao\\{$schema['name']};";
+            $namespace = ($schema_name == 'Public') ? "namespace Sis\\Dao;" : "namespace Sis\\Dao\\{$schema_name};";
 
             $handle = fopen($class_path, "w");
 

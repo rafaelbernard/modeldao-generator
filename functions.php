@@ -403,7 +403,7 @@ function create_dao_files($database) {
             $class_file = "{$class_name}.php";
             $class_path = "{$schema_dao_path}{$class_file}";
             $schema_name = $schema['name'];
-            $schema_for_namespace_path = ($schema_name == 'Public') ? '' : "\\{$schema_name}";
+            $schema_for_namespace_path = ($schema_name == 'Public') ? '' : "{$schema_name}\\";
 
             $namespace = ($schema_name == 'Public') ? "namespace Sis\\Dao;" : "namespace Sis\\Dao\\{$schema_name};";
 

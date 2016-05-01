@@ -159,6 +159,7 @@ function get_attributes_from_table($tableoid) {
                 AND c.contype       = 'p'
         WHERE   attrelid = %d
         AND     attnum > 0
+        AND     attstattarget = -1
         ORDER BY attnum
         "
         , $tableoid

@@ -257,6 +257,9 @@ function normalize_as_namespaces_and_classes($tables) {
         $class['first_primary_key_attribute_name'] = to_attribute_name($class['first_primary_key_column']);
         $class['table_data'] = $table;
 
+        //tolog($class['name']);
+        //tolog($class['primary_key_columns']);
+
         $database['schemas']["$actual_schema"]['tables'][] = $class;
 
     }

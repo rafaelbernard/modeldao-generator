@@ -1,4 +1,4 @@
-<?php
+p<?php
 
 global $args;
 $args = array();
@@ -445,7 +445,7 @@ function write_dao_update($handle, $table) {
     $full_table_name = $schema_name == 'public' ? $table_name : $schema_name . '.' . $table_name;
 
     $text .= "    public function update{$className}($className {$object}) {" . PHP_EOL;
-    $text .= "        \$qry = sprintf(\"" . PHP_EOL;
+    $text .= "        \$qry = sprintf('" . PHP_EOL;
     $text .= "            UPDATE $full_table_name" . PHP_EOL;
     $text .= "            SET" . PHP_EOL;
 
@@ -469,7 +469,7 @@ function write_dao_update($handle, $table) {
     }
 
     $text .= " {$set} " . PHP_EOL;
-    $text .= "         \" " . PHP_EOL;
+    $text .= "         ' " . PHP_EOL;
     $text .= " {$values} " . PHP_EOL;
 
     $text .= "        " . PHP_EOL;

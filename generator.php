@@ -12,7 +12,7 @@ if (isset($args['od'])) {
     $output_directory = $args['od'];
 }
 
-define('PATH_OUTPUT_DIRECTORY', $output_directory . '/gerador');
+define('PATH_OUTPUT_DIRECTORY', $output_directory . '/modedao-generator');
 
 $server = isset($args['server']) ? $args['server'] : '';
 
@@ -22,10 +22,10 @@ if (!$server) {
 }
 
 if (trim($server) == '' || !isset($server))
-    die('Informe server');
+    die('Inform server');
 
 $dbname = isset($args['dbname']) ? $args['dbname'] : '';
-$user = isset($args['user']) ? $args['user'] : die('Informe user');
+$user = isset($args['user']) ? $args['user'] : die('Inform user');
 
 echo "Password: ";
 $password = preg_replace('/\r?\n$/', '', `stty -echo; head -n1 ; stty echo`);
@@ -66,11 +66,12 @@ if ($result_tables)
 
     $database = normalize_as_namespaces_and_classes($tables);
 
-    create_po_directories($database);
+    create_entity_directories($database);
+    create_datamapper_directories($database);
     create_dao_directories($database);
     create_class_files($database);
     create_dao_files($database);
-    
+
     exit;
 
     fwrite($handle, print_r($tables, true));

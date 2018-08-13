@@ -267,11 +267,20 @@ function normalize_as_namespaces_and_classes($tables) {
     return $database;
 }
 
-function create_po_directories($database) {
-    echo "create_po_directories". PHP_EOL;
-    mkdir(PATH_OUTPUT_DIRECTORY . '/Po');
+function create_entity_directories($database) {
+    echo "create_entity_directories". PHP_EOL;
+    mkdir(PATH_OUTPUT_DIRECTORY . '/Entity');
     foreach ($database['schemas'] as $schema) {
-        mkdir(PATH_OUTPUT_DIRECTORY . '/Po/' . $schema['name']);
+        mkdir(PATH_OUTPUT_DIRECTORY . '/Entity/' . $schema['name']);
+    }
+    rmdir(PATH_OUTPUT_DIRECTORY . '/Po/Public');
+}
+
+function create_datamapper_directories($database) {
+    echo "create_datamapper_directories". PHP_EOL;
+    mkdir(PATH_OUTPUT_DIRECTORY . '/DataMapper');
+    foreach ($database['schemas'] as $schema) {
+        mkdir(PATH_OUTPUT_DIRECTORY . '/DataMapper/' . $schema['name']);
     }
     rmdir(PATH_OUTPUT_DIRECTORY . '/Po/Public');
 }
